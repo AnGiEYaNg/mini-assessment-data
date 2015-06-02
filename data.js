@@ -8,32 +8,32 @@ will not need to edit the lines above and below them.
 // Queues
 
 function Queue() {
-  // your code here
+  this.data = [];
 }
 
 Queue.prototype.add = function(item) {
-  // your code here
+  this.data.push(item);
   return this; // for chaining, do not edit
 };
 
 Queue.prototype.remove = function() {
-  // your code here
+  return this.data.shift();
 };
 
 //-----------------------------------------
 // Stacks
 
 function Stack() {
-  // your code here
+  this.data = [];
 }
 
 Stack.prototype.add = function(item) {
-  // your code here
+  this.data.push(item);
   return this; // for chaining, do not edit
 };
 
 Stack.prototype.remove = function() {
-  // your code here
+  return this.data.pop();
 };
 
 //-----------------------------------------
@@ -45,21 +45,39 @@ function LinkedList () {
 
 function ListNode (item, prev, next) {
   this.item = item;
-  this.next = next || null;
   this.prev = prev || null;
+  this.next = next || null;
 }
 
 LinkedList.prototype.addToTail = function(item) {
-  // your code here
+  var newNode = new ListNode(item, this.tail, null)
+  if(this.tail) {this.tail.next = newNode};
+  this.tail = newNode;
+  if(!this.head) this.head = this.tail;
   return this; // for chaining, do not edit
 };
 
 LinkedList.prototype.removeFromTail = function() {
-  // your code here
+  var temp = this.tail;
+  if (!this.tail) return;
+  if(temp.prev){
+    this.tail = temp.prev;
+    this.tail.next = null;
+  }else{
+    this.tail = null;
+    this.head = null;
+  }
+  return temp.item;
 };
 
 LinkedList.prototype.forEach = function(iterator) {
-  // your code here
+  var temp = this.head;
+  while(temp.next){
+    iterator(temp.item);
+    temp = temp.next;
+  }
+  iterator(this.tail.item);
+  //console.log('for each',this.head)
 };
 
 //-----------------------------------------
@@ -80,14 +98,30 @@ function HashNode (key, value) {
 
 function Hash () {
   this.buckets = Array(20);
-  // your code here
+  for (var i = 0; i < this.buckets.length; i++) {
+    this.buckets[i] = new LinkedList();
+  };
 }
 
 Hash.prototype.set = function(key, value) {
-  // your code here
+  var bucketNum = _hash(key)
+  this.buckets[bucketNum].addToTail({key:key, value: value})
   return this; // for chaining, do not edit
 };
 
+var temp = [];
+
 Hash.prototype.get = function(key) {
-  // your code here
+  var bucketNum = _hash(key)
+  var bucket = this.buckets[bucketNum]
+  bucket.forEach(searchNode);
+  var ans = temp.pop();
+  return ans.value;
 };
+
+
+function searchNode(node){
+  temp.push(node)
+  // console.log(temp)
+  return temp;
+}
